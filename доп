@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+int size;
+
+// Ввод размера квадратного массива
+printf("Введите размер квадратного массива: ");
+scanf("%d", &size);
+
+// Выделение памяти для динамического массива
+int **matrix = (int**)malloc(size * sizeof(int*));
+if (matrix == NULL) {
+printf("Ошибка выделения памяти!\n");
+return 1;
+}
+for (int i = 0; i < size; i++) {
+matrix[i] = (int*)malloc(size * sizeof(int));
+if (matrix[i] == NULL) {
+printf("Ошибка выделения памяти!\n");
+// Освобождение уже выделенной памяти
+for (int j = 0; j < i; j++) {
+free(matrix[j]);
+}
+free(matrix);
+return 1;
+}
+}
+
+// Заполнение массива
+printf("Введите элементы массива:\n");
+for (int i = 0; i < size; i++) {
+for (int j = 0; j < size; j++) {
+scanf("%d", &matrix[i][j]);
+}
+}
+
+// Подсчет суммы элементов выше главной диагонали
+int sum = 0;
+for (int i = 0; i < size; i++) {
+for (int j = i + 1; j < size; j++) {
+sum += matrix[i][j];
+}
+}
+
+// Вывод результата
+printf("Сумма элементов выше главной диагонали: %d\n", sum);
+
+// Освобождение памяти
+for (int i = 0; i < size; i++) {
+free(matrix[i]);
+}
+free(matrix);
+
+return 0;
+}
