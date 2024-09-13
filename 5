@@ -8,57 +8,54 @@ int age;
 char group[10];
 };
 
-// Функция для поиска студента по заданным параметрам
-struct student *find_student(struct student students[], int size, char *name, int age, char *group) {
-// Проходим по всем студентам
+// Функция для поиска совпадений по заданному параметру
+void find_students(struct student students[], int size, char *search_param, char *param_name) {
+int found = 0; // Флаг, указывающий, были ли найдены совпадения
+printf("Студенты, соответствующие параметру '%s' = '%s':\n", param_name, search_param);
+
 for (int i = 0; i < size; i++) {
-// Проверяем соответствие всех параметров
-if (strcmp (students[i].name, name) == 0 &&
-students[i].age == age &&
-strcmp (students[i].group, group) == 0) {
-// Если все параметры совпадают, возвращаем адрес студента
-return &students[i];
+if (strcmp(param_name, "name") == 0 && strcmp(students[i].name, search_param) == 0) {
+printf("Имя: %s, Возраст: %d, Группа: %s\n", students[i].name, students[i].age, students[i].group);
+found = 1;
+} else if (strcmp(param_name, "age") == 0 && students[i].age == atoi(search_param)) {
+printf("Имя: %s, Возраст: %d, Группа: %s\n", students[i].name, students[i].age, students[i].group);
+found = 1;
+} else if (strcmp(param_name, "group") == 0 && strcmp(students[i].group, search_param) == 0) {
+printf("Имя: %s, Возраст: %d, Группа: %s\n", students[i].name, students[i].age, students[i].group);
+found = 1;
 }
 }
-// Если студент не найден, возвращаем NULL
-return NULL;
+
+if (found == 0) {
+printf("Совпадений не найдено.\n");
+}
 }
 
 int main() {
 // Создаем массив структур student
 struct student students[] = {
-{"Иван_Иванов", 18, "ВВВ-1"},
-{"Петр_Петров", 19, "ВВВ-2"},
-{"Мария_Сидорова", 20, "ВВВ-1"},
+{"Иван Иванов", 18, "ВВВ-1"},
+{"Петр Петров", 19, "ВВВ-2"},
+{"Мария Сидорова", 20, "ВВВ-1"},
+{"Василий Петров", 21, "ВВВ-3"}
 };
+
 // Определяем размер массива
 int size = sizeof(students) / sizeof(students[0]);
 
-// Запрашиваем у пользователя параметры для поиска
-char name[50];
-int age;
-char group[10];
-printf("Введите имя студента: ");
-scanf("%s", name);
-printf("Введите возраст студента: ");
-scanf("%d", &age);
-printf("Введите группу студента: ");
-scanf("%s", group);
+// Запрашиваем у пользователя параметр для поиска
+char search_param[50];
+char param_name[10];
+printf("Введите имя параметра для поиска (name, age, group): ");
+scanf("%s", param_name);
+getchar(); // Очищаем буфер ввода
 
-// Вызываем функцию для поиска студента
-struct student *found_student = find_student(students, size, name, age, group);
+printf("Введите значение параметра: ");
+fgets(search_param, sizeof(search_param), stdin);
+search_param[strcspn(search_param, "\n")] = 0; // Удаляем символ новой строки
 
-// Проверяем, найден ли студент
-if (found_student != NULL) {
-// Выводим информацию о найденном студенте
-printf("Найден студент:\n");
-printf("Имя: %s\n", found_student->name);
-printf("Возраст: %d\n", found_student->age);
-printf("Группа: %s\n", found_student->group);
-} else {
-// Если студент не найден, выводим сообщение
-printf("Студент не найден.\n");
-}
+// Вызываем функцию для поиска совпадений
+find_students(students, size, search_param, param_name);
 
 return 0;
 }
