@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+
+// Структура, представляющая студента
+struct student {
+char name[50];
+int age;
+char group[10];
+};
+
+// Функция для поиска студента по заданным параметрам
+struct student *find_student(struct student students[], int size, char *name, int age, char *group) {
+// Проходим по всем студентам
+for (int i = 0; i < size; i++) {
+// Проверяем соответствие всех параметров
+if (strcmp (students[i].name, name) == 0 &&
+students[i].age == age &&
+strcmp (students[i].group, group) == 0) {
+// Если все параметры совпадают, возвращаем адрес студента
+return &students[i];
+}
+}
+// Если студент не найден, возвращаем NULL
+return NULL;
+}
+
+int main() {
+// Создаем массив структур student
+struct student students[] = {
+{"Иван_Иванов", 18, "ВВВ-1"},
+{"Петр_Петров", 19, "ВВВ-2"},
+{"Мария_Сидорова", 20, "ВВВ-1"},
+};
+// Определяем размер массива
+int size = sizeof(students) / sizeof(students[0]);
+
+// Запрашиваем у пользователя параметры для поиска
+char name[50];
+int age;
+char group[10];
+printf("Введите имя студента: ");
+scanf("%s", name);
+printf("Введите возраст студента: ");
+scanf("%d", &age);
+printf("Введите группу студента: ");
+scanf("%s", group);
+
+// Вызываем функцию для поиска студента
+struct student *found_student = find_student(students, size, name, age, group);
+
+// Проверяем, найден ли студент
+if (found_student != NULL) {
+// Выводим информацию о найденном студенте
+printf("Найден студент:\n");
+printf("Имя: %s\n", found_student->name);
+printf("Возраст: %d\n", found_student->age);
+printf("Группа: %s\n", found_student->group);
+} else {
+// Если студент не найден, выводим сообщение
+printf("Студент не найден.\n");
+}
+
+return 0;
+}
