@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Функция для создания и инициализации матрицы
+int** createMatrix(int size) {
+    int** matrix = (int**)malloc(size * sizeof(int*));
+    for (int i = 0; i < size; i++) {
+        matrix[i] = (int*)malloc(size * sizeof(int));
+        for (int j = 0; j < size; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+    return matrix;
+}
+
+// Функция для печати матрицы
+void printMatrix(int** matrix, int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Функция для отождествления вершин
+void mergeVertices(int** matrix, int size, int v1, int v2) {
+    for (int i = 0; i < size; i++) {
+        if (i != v1 && i != v2) {
+            matrix[v1][i] = matrix[v1][i] || matrix[v2][i];
+            matrix[i][v1] = matrix[i][v1] || matrix[i][v2];
+        }
+    }
+    for (int i = 0; i < size; i++) {
+        matrix[v2][i] = 0;
+        matrix[i][v2] = 0;
+    }
+}
+
+// Функция для стягивания ребра
+void contractEdge(int** matrix, int size, int v1, int v2) {
+    mergeVertices(matrix, size, v1, v2);
+}
+
+// Функция для расщепления вершины
+void splitVertex(int** matrix, int* size, int v) {
+    (*size)++;
+    matrix = (int**)realloc(matrix, (*size) * sizeof(int*));
+    for (int i = 0; i < (*size); i++) {
+        matrix[i] = (int*)realloc(matrix[i], (*size) * sizeof(int));
+    }
+    for (int i = 0; i < (*size); i++) {
+        matrix[(*size)-1][i] = 0;
+        matrix[i][(*size)-1] = 0;
+    }
+    for (int i = 0; i < *size-1; i++) {
+        if (matrix[v][i] == 1) {
+            matrix[v][i] = 0;
+            matrix[i][v] = 0;
+            matrix[*size-1][i] = 1;
+            matrix[i][*size-1] = 1;
+        }
+    }
+}
+
+int main() {
+    int size = 5;
+    int** matrix = createMatrix(size);
+
+    // Заполнение матрицы случайными данными для демонстрации
+    for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+            matrix[i][j] = rand() % 2;
+            matrix[j][i] = matrix[i][j];
+        }
+    }
+
+    printf("Исходная матрица смежности:\n");
+    printMatrix(matrix, size);
+
+    int choice, v1, v2;
+    printf("Выберите операцию:\n");
+    printf("1. Отождествление вершин\n");
+    printf("2. Стягивание ребра\n");
+    printf("3. Расщепление вершины\n");
+    printf("Введите номер операции: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Введите номера вершин для отождествления: ");
+            scanf("%d %d", &v1, &v2);
+            mergeVertices(matrix, size, v1, v2);
+            printf("Матрица после отождествления вершин:\n");
+            printMatrix(matrix, size);
+            break;
+        case 2:
+            printf("Введите номера вершин для стягивания ребра: ");
+            scanf("%d %d", &v1, &v2);
+            contractEdge(matrix, size, v1, v2);
+            printf("Матрица после стягивания ребра:\n");
+            printMatrix(matrix, size);
+            break;
+        case 3:
+            printf("Введите номер вершины для расщепления: ");
+            scanf("%d", &v1);
+            splitVertex(matrix, &size, v1);
+            printf("Матрица после расщепления вершины:\n");
+            printMatrix(matrix, size);
+            break;
+        default:
+            printf("Неверный выбор!\n");
+    }
+
+    // Освобождение памяти
+    for (int i = 0; i < size; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+
+    return 0;
+}
